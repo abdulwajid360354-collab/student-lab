@@ -1,1 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mega PDF Tools - All in One</title>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #e74c3c; /* PDF Red */
+            --secondary-color: #2c3e50; /* Dark Blue */
+            --bg-color: #f8f9fa;
+            --card-hover: #ffffff;
+        }
 
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--secondary-color);
+        }
+
+        /* Hero Header */
+        header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.8rem;
+            font-weight: 700;
+        }
+
+        header p {
+            margin-top: 15px;
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: -40px auto 50px; /* Overlap header effect */
+            padding: 0 20px;
+            position: relative;
+        }
+
+        /* Grid Layout */
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        /* Tool Card */
+        .tool-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            text-align: center;
+            text-decoration: none;
+            color: var(--secondary-color);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100%; /* Equal height */
+        }
+
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(0,0,0,0.1);
+            border-color: var(--primary-color);
+        }
+
+        /* Icon Styling */
+        .icon-wrapper {
+            width: 70px;
+            height: 70px;
+            background-color: #fff0ef;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            transition: background 0.3s;
+        }
+
+        .tool-card:hover .icon-wrapper {
+            background-color: var(--primary-color);
+        }
+
+        .icon-wrapper i {
+            font-size: 30px;
+            color: var(--primary-color);
+            transition: color 0.3s;
+        }
+
+        .tool-card:hover .icon-wrapper i {
+            color: white;
+        }
+
+        .tool-card h3 {
+            margin: 10px 0;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .tool-card p {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        /* Badge for new/popular tools */
+        .badge {
+            background-color: #27ae60;
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-left: 5px;
+            vertical-align: middle;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            header h1 { font-size: 2rem; }
+            .container { margin-top: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Mega PDF Tools</h1>
+        <p>Every tool you need to work with PDFs in one place.</p>
+    </header>
+
+    <div class="container">
+        <div class="tools-grid">
+
+            <!-- 1. Merge PDF -->
+            <a href="merge.html" class="tool-card">
+                <div class="icon-wrapper"><i class="fa-solid fa-object-group"></i></div>
+                <h3>Merge PDF</h3>
+                <p>Combine multiple PDFs into one.</p>
+            </a>
+
+            <!-- 2. Split PDF -->
+            <a href="split.html" class="tool-card">
+                <div class="icon-wrapper"><i class="fa-solid fa-scissors"></i></div>
+                <h3>Split PDF</h3>
+                <p>Extract pages from your PDF.</p>
+            </a>
+
+            <!-- 3. Compress PDF -->
+            <a href="compress.html" class="tool-card">
+                <div class="icon-wrapper"><i class="fa-solid fa-compress"></i></div>
+                <h3>Compress PDF</h3>
+                <p>Reduce file size, keep quality.</p>
+            </a>
+
+            <!-- 4. PDF to Word -->
+            <a href="pdf-to-word.html" class="tool-card">
+                <div class="icon-wrapper"><i class="fa-solid fa-file-word"></i></div>
+                <h3>PDF to Word</h3>
+                <p>Convert PDF to editable DOCX.</p>
+            </a>
+
+            <!-- 5. Word to PDF -->
+            <a href="word-to-pdf.html" class="tool-card">
+                <div class="icon-wrapper"><i class="fa-solid fa-file-pdf"></i></div>
+                <h3>Word to PDF</h3>
+                <p>Convert DOCX files to PDF.</p>
+            </a>
+
+            <!-- 6. PDF to JPG -->
+            <a href="pdf-to-jpg.html" class="tool-card">
+                <div class="icon-wrapper"><i class="fa-regular fa-image"></i></div>
+                <h3>PDF to JPG</h3>
+                <p>Turn PDF pages into images.</p>
+            </a>
+
+            <!-- 7. JPG to PDF -->
+            <a href="jpg-to-pdf.html" class="tool-card">
+                <div class="icon-wrapper"><i class="fa-solid fa-images"></i></div>
+                <h3>JPG to PDF</h3>
+                <p>Convert images to PDF file.</p>
+            </a>
+
+            <!-- 8. PDF to Excel -->
+            <a href="pdf-to-excel.html" class="tool-card">
+                <div class="icon-wrapper"><i class="fa-solid fa-file-excel"></i></div>
+                <h3>PDF to Excel</h3>
+                <p>Convert PDF data to Spreadsheets.</p>
+            </a>
+
+            <!-- 9. Excel to PDF -->
+            <a href="excel-to-pdf.html" class="tool-card">
+                <div class="icon-wrapper"><i class="fa-solid fa-table"></i></div>
+                <h3>Excel to PDF</h3>
+                <p>Convert XLSX spreadsheets to PDF.</p>
+            </a>
+
+            <!-- 10. PDF to PPT -->
+            <a href="pdf-to-ppt.html" class="tool-card">
+                <div class="icon-wrapper"><i class="fa-solid fa-file-powerpoint"></i></div>
+                <h3>PDF to PowerPoint</h3>
+                <p>Convert PDF to Powerpoint slides.</p>
+            </a>
+
+            <!-- 11. PPT to PDF -->
+            <a href="ppt-to-pdf.html" class="tool-card">
+                <div class="icon-wrapper"><i class="fa-solid fa-presentation-screen"></i></div>
+                <h3>PowerPoint to PDF</h3>
+                <p>Convert PPTX slides to PDF.</p>
+            </a>
+
+            <!-- 12. Rotate PDF -->
+            <a href="rotate.html" class="tool-card">
+                <div class="icon-wrapper"><i class="fa-solid fa-rotate-right"></i></div>
+                <h3>Rotate PDF</h3>
+                <p>Rotate your PDF pages easily.</p>
+            </a>
+
+            <!-- 13. Unlock PDF -->
+            <a href="unlock.html" class="tool-card">
+                <div class="icon-wrapper"><i class="fa-solid fa-unlock"></i></div>
+                <h3>Unlock PDF</h3>
+                <p>Remove password from PDF.</p>
+            </a>
+
+            <!-- 14. Protect PDF -->
+            <a href="protect.html" class="tool-card">
+                <div class="icon-wrapper"><i class="fa-solid fa-shield-halved"></i></div>
+                <h3>Protect PDF</h3>
+                <p>Encrypt PDF with a password.</p>
+            </a>
+
+            <!-- 15. Add Watermark -->
+            <a href="watermark.html" class="tool-card">
+                <div class="icon-wrapper"><i class="fa-solid fa-stamp"></i></div>
+                <h3>Add Watermark</h3>
+                <p>Stamp an image or text over PDF.</p>
+            </a>
+
+            <!-- 16. Delete Pages -->
+            <a href="delete-pages.html" class="tool-card">
+                <div class="icon-wrapper"><i class="fa-solid fa-trash-can"></i></div>
+                <h3>Delete Pages</h3>
+                <p>Remove specific pages from PDF.</p>
+            </a>
+
+            <!-- 17. Extract Pages -->
+            <a href="extract.html" class="tool-card">
+                <div class="icon-wrapper"><i class="fa-solid fa-file-export"></i></div>
+                <h3>Extract Pages</h3>
+                <p>Pull out selected pages only.</p>
+            </a>
+
+            <!-- 18. Reorder Pages -->
+            <a href="reorder.html" class="tool-card">
+                <div class="icon-wrapper"><i class="fa-solid fa-arrow-down-up-across-line"></i></div>
+                <h3>Reorder Pages</h3>
+                <p>Sort pages in PDF file.</p>
+            </a>
+
+            <!-- 19. Add Page Numbers -->
+            <a href="page-numbers.html" class="tool-card">
+                <div class="icon-wrapper"><i class="fa-solid fa-list-ol"></i></div>
+                <h3>Add Page Numbers</h3>
+                <p>Insert page numbers into PDF.</p>
+            </a>
+
+            <!-- 20. Sign PDF -->
+            <a href="sign.html" class="tool-card">
+                <div class="icon-wrapper"><i class="fa-solid fa-signature"></i></div>
+                <h3>Sign PDF</h3>
+                <p>Add your signature to the PDF.</p>
+            </a>
+
+        </div>
+    </div>
+    
+    <footer style="text-align: center; padding: 40px; color: #7f8c8d; font-size: 0.9rem;">
+        &copy; 2024 Mega PDF Tools. All rights reserved.
+    </footer>
+
+</body>
+  </html>
