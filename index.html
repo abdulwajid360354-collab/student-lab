@@ -4,55 +4,61 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Lab | Ultimate Tools for Students</title>
-    <meta name="description" content="All-in-one platform for students. AI Assistant, Schedule maker, Pomodoro timer, CGPA calculator, and more.">
+    <meta name="description" content="All-in-one platform for students. Schedule maker, AI Quiz Maker, Pomodoro timer, CGPA calculator, and PDF Tools.">
     
-    <!-- Tailwind CSS (Fast Loading UI) -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome for Icons -->
+    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Tailwind Config for Dark Mode & Custom Colors -->
     <script>
         tailwind.config = {
             darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: { primary: '#4F46E5', darkbg: '#111827', darkcard: '#1F2937' }
-                }
-            }
+            theme: { extend: { colors: { primary: '#4F46E5', darkbg: '#111827', darkcard: '#1F2937' } } }
         }
     </script>
     <style>
         body { transition: background-color 0.3s, color 0.3s; }
         .hide { display: none !important; }
-        /* Loader animation for AI */
         .loader { border: 4px solid #f3f3f3; border-top: 4px solid #4F46E5; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        /* MCQ Correct/Wrong Colors */
+        input[type="radio"]:checked + span { font-weight: bold; color: #4F46E5; }
+        .correct-answer { background-color: #d1fae5 !important; border-color: #10b981 !important; color: #065f46 !important; }
+        .wrong-answer { background-color: #fee2e2 !important; border-color: #ef4444 !important; color: #991b1b !important; }
+        
+        /* Print Styles for Schedule Maker */
+        @media print {
+            body * { visibility: hidden; }
+            #schedule, #schedule * { visibility: visible; }
+            #schedule { position: absolute; left: 0; top: 0; width: 100%; }
+            nav, .no-print { display: none !important; }
+        }
+        
+        /* Editable Table Cells */
+        td[contenteditable="true"]:focus { outline: 2px solid #4F46E5; background-color: #e0e7ff; color: #111827; }
+        .dark td[contenteditable="true"]:focus { background-color: #374151; color: white; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-900 dark:bg-darkbg dark:text-gray-100 font-sans min-h-screen flex flex-col">
 
     <!-- TOP BANNER SPOT -->
-    <div class="w-full bg-gray-200 dark:bg-gray-800 text-center text-xs py-2 text-gray-500">
+    <div class="w-full bg-gray-200 dark:bg-gray-800 text-center text-xs py-2 text-gray-500 no-print">
         [ Top Banner Ad Placement ]
     </div>
 
     <!-- Navigation Bar -->
-    <nav class="sticky top-0 z-50 bg-white dark:bg-darkcard shadow-md px-4 py-3">
+    <nav class="sticky top-0 z-50 bg-white dark:bg-darkcard shadow-md px-4 py-3 no-print">
         <div class="max-w-6xl mx-auto flex justify-between items-center">
-            <!-- Logo -->
             <div class="flex items-center cursor-pointer" onclick="showSection('home')">
                 <i class="fa-solid fa-flask text-primary text-2xl mr-2"></i>
                 <h1 class="text-xl font-bold tracking-wide text-primary">Student Lab</h1>
             </div>
-
-            <!-- Search Bar (Desktop) -->
             <div class="hidden md:block relative w-1/3">
-                <input type="text" id="searchBar" placeholder="Search tools..." onkeyup="searchTools('searchBar')" class="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:border-primary">
+                <input type="text" id="searchBar" placeholder="Search tools..." onkeyup="searchTools()" class="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:border-primary">
                 <i class="fa-solid fa-search absolute left-4 top-3 text-gray-400"></i>
             </div>
-
-            <!-- Controls (Dark Mode & Home) -->
             <div class="flex items-center space-x-4">
                 <button onclick="showSection('home')" class="text-gray-600 dark:text-gray-300 hover:text-primary transition font-bold hidden md:block">Home</button>
                 <button onclick="toggleDarkMode()" class="text-gray-600 dark:text-gray-300 hover:text-primary transition">
@@ -60,282 +66,466 @@
                 </button>
             </div>
         </div>
-        <!-- Mobile Search -->
-        <div class="md:hidden mt-3">
-            <input type="text" id="mobileSearchBar" placeholder="Search tools..." onkeyup="searchTools('mobileSearchBar')" class="w-full pl-4 pr-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none">
-        </div>
     </nav>
 
-    <!-- Main Content Area -->
+    <!-- Main Content -->
     <main class="flex-grow max-w-6xl mx-auto w-full px-4 py-8">
         
         <!-- Social Share Banner -->
-        <div class="flex justify-end space-x-2 mb-6 text-sm">
+        <div class="flex justify-end space-x-2 mb-6 text-sm no-print">
             <button onclick="shareLink('whatsapp')" class="bg-green-500 text-white px-3 py-1 rounded shadow hover:bg-green-600"><i class="fa-brands fa-whatsapp"></i> Share</button>
             <button onclick="shareLink('copy')" class="bg-gray-600 text-white px-3 py-1 rounded shadow hover:bg-gray-700"><i class="fa-solid fa-link"></i> Copy</button>
         </div>
 
         <!-- ================= HOME SECTION ================= -->
-        <section id="home" class="block">
-            <h2 class="text-2xl font-bold mb-6">Popular Tools</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="tools-grid">
+        <section id="home" class="block no-print">
+            <h2 class="text-2xl font-bold mb-6">All Student Tools</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" id="tools-grid">
                 
-                <!-- AI TUTOR CARD (NEW) -->
-                <div class="tool-card bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-6 rounded-xl shadow hover:shadow-lg transition cursor-pointer relative overflow-hidden" onclick="showSection('ai-tutor')">
-                    <div class="absolute -right-4 -bottom-4 opacity-20"><i class="fa-solid fa-robot text-8xl"></i></div>
-                    <i class="fa-solid fa-brain text-3xl mb-4"></i>
-                    <h3 class="text-xl font-bold mb-2">AI Study Assistant <span class="bg-yellow-400 text-yellow-900 text-xs px-2 py-1 rounded ml-2">NEW</span></h3>
-                    <p class="text-indigo-100 text-sm">Ask questions, summarize topics, or generate study plans instantly using AI.</p>
+                <!-- AI MCQ Maker -->
+                <div class="tool-card bg-gradient-to-br from-blue-500 to-cyan-500 text-white p-5 rounded-xl shadow cursor-pointer relative overflow-hidden" onclick="showSection('mcq-maker')">
+                    <i class="fa-solid fa-list-check text-2xl mb-2"></i>
+                    <h3 class="text-lg font-bold mb-1">AI Notes Test</h3>
+                    <p class="text-blue-100 text-xs">Convert notes to MCQs</p>
                 </div>
 
-                <!-- Timer Card -->
-                <div class="tool-card bg-white dark:bg-darkcard p-6 rounded-xl shadow hover:shadow-lg transition cursor-pointer border-t-4 border-primary" onclick="showSection('timer')">
-                    <i class="fa-solid fa-stopwatch text-3xl text-primary mb-4"></i>
-                    <h3 class="text-xl font-bold mb-2">Study Timer (Pomodoro)</h3>
-                    <p class="text-gray-600 dark:text-gray-400 text-sm">Boost productivity with custom focus sessions.</p>
+                <!-- Schedule Maker -->
+                <div class="tool-card bg-white dark:bg-darkcard p-5 rounded-xl shadow cursor-pointer border-t-4 border-indigo-500" onclick="showSection('schedule')">
+                    <i class="fa-solid fa-calendar-days text-2xl text-indigo-500 mb-2"></i>
+                    <h3 class="text-lg font-bold mb-1">Schedule Maker</h3>
+                    <p class="text-gray-500 text-xs">Daily/Weekly Timetable</p>
                 </div>
 
-                <!-- Notes Card -->
-                <div class="tool-card bg-white dark:bg-darkcard p-6 rounded-xl shadow hover:shadow-lg transition cursor-pointer border-t-4 border-green-500" onclick="showSection('notes')">
-                    <i class="fa-solid fa-book-open text-3xl text-green-500 mb-4"></i>
-                    <h3 class="text-xl font-bold mb-2">Smart Notes Maker</h3>
-                    <p class="text-gray-600 dark:text-gray-400 text-sm">Write, auto-save to local storage, and download as TXT.</p>
+                <!-- CGPA -->
+                <div class="tool-card bg-white dark:bg-darkcard p-5 rounded-xl shadow cursor-pointer border-t-4 border-yellow-500" onclick="showSection('cgpa')">
+                    <i class="fa-solid fa-graduation-cap text-2xl text-yellow-500 mb-2"></i>
+                    <h3 class="text-lg font-bold mb-1">Pro CGPA Calc</h3>
+                    <p class="text-gray-500 text-xs">GPA & Overall CGPA</p>
                 </div>
 
-                <!-- CGPA Card -->
-                <div class="tool-card bg-white dark:bg-darkcard p-6 rounded-xl shadow hover:shadow-lg transition cursor-pointer border-t-4 border-yellow-500" onclick="showSection('cgpa')">
-                    <i class="fa-solid fa-graduation-cap text-3xl text-yellow-500 mb-4"></i>
-                    <h3 class="text-xl font-bold mb-2">CGPA Calculator</h3>
-                    <p class="text-gray-600 dark:text-gray-400 text-sm">Easily calculate your semester GPA.</p>
+                <!-- Exam Countdown -->
+                <div class="tool-card bg-white dark:bg-darkcard p-5 rounded-xl shadow cursor-pointer border-t-4 border-red-500" onclick="showSection('countdown')">
+                    <i class="fa-solid fa-hourglass-half text-2xl text-red-500 mb-2"></i>
+                    <h3 class="text-lg font-bold mb-1">Exam Countdown</h3>
+                    <p class="text-gray-500 text-xs">Track exam days left</p>
                 </div>
 
-                <!-- Word Counter Card -->
-                <div class="tool-card bg-white dark:bg-darkcard p-6 rounded-xl shadow hover:shadow-lg transition cursor-pointer border-t-4 border-red-500" onclick="showSection('wordcount')">
-                    <i class="fa-solid fa-file-word text-3xl text-red-500 mb-4"></i>
-                    <h3 class="text-xl font-bold mb-2">Word Counter</h3>
-                    <p class="text-gray-600 dark:text-gray-400 text-sm">Count words, characters, and reading time.</p>
+                <!-- Pomodoro Timer -->
+                <div class="tool-card bg-white dark:bg-darkcard p-5 rounded-xl shadow cursor-pointer border-t-4 border-primary" onclick="showSection('timer')">
+                    <i class="fa-solid fa-stopwatch text-2xl text-primary mb-2"></i>
+                    <h3 class="text-lg font-bold mb-1">Study Timer</h3>
+                    <p class="text-gray-500 text-xs">Pomodoro & Daily Tracker</p>
                 </div>
 
+                <!-- Notes Maker -->
+                <div class="tool-card bg-white dark:bg-darkcard p-5 rounded-xl shadow cursor-pointer border-t-4 border-green-500" onclick="showSection('notes')">
+                    <i class="fa-solid fa-book-open text-2xl text-green-500 mb-2"></i>
+                    <h3 class="text-lg font-bold mb-1">Notes Maker</h3>
+                    <p class="text-gray-500 text-xs">Auto-save & Download</p>
+                </div>
+
+                <!-- Unit & Word Converter -->
+                <div class="tool-card bg-white dark:bg-darkcard p-5 rounded-xl shadow cursor-pointer border-t-4 border-pink-500" onclick="showSection('converter')">
+                    <i class="fa-solid fa-calculator text-2xl text-pink-500 mb-2"></i>
+                    <h3 class="text-lg font-bold mb-1">Converter & Words</h3>
+                    <p class="text-gray-500 text-xs">Units, Words, Read time</p>
+                </div>
+
+                <!-- PDF Tools -->
+                <div class="tool-card bg-white dark:bg-darkcard p-5 rounded-xl shadow cursor-pointer border-t-4 border-purple-500" onclick="showSection('pdf-tools')">
+                    <i class="fa-solid fa-file-pdf text-2xl text-purple-500 mb-2"></i>
+                    <h3 class="text-lg font-bold mb-1">PDF Tools</h3>
+                    <p class="text-gray-500 text-xs">Merge, Split, Compress</p>
+                </div>
+
+            </div>
+            
+            <!-- Blog Section (Requested in Prompt 1) -->
+            <div class="mt-10 bg-primary text-white rounded-xl p-6 flex flex-col md:flex-row items-center justify-between">
+                <div>
+                    <h3 class="text-xl font-bold mb-1">Study Tips Blog</h3>
+                    <p class="text-sm text-blue-100">Read latest tips to score A+ and manage time efficiently.</p>
+                </div>
+                <button class="mt-4 md:mt-0 bg-white text-primary font-bold px-6 py-2 rounded-full hover:bg-gray-100 text-sm">Read Blog</button>
             </div>
         </section>
 
         <!-- MIDDLE BANNER SPOT -->
-        <div class="w-full bg-gray-200 dark:bg-gray-800 text-center text-xs py-2 text-gray-500 my-6">
-            [ Middle Banner Ad Placement ]
-        </div>
+        <div class="w-full bg-gray-200 dark:bg-gray-800 text-center text-xs py-2 text-gray-500 my-6 no-print">[ Middle Banner Ad Placement ]</div>
 
         <!-- ================= TOOLS SECTIONS ================= -->
 
-        <!-- 1. AI STUDY ASSISTANT (NEW) -->
-        <section id="ai-tutor" class="hide w-full max-w-4xl mx-auto">
-            <h2 class="text-3xl font-bold mb-2 flex items-center"><i class="fa-solid fa-robot text-primary mr-3"></i> AI Study Assistant</h2>
-            <p class="text-gray-600 dark:text-gray-400 mb-6 text-sm">Your personal AI Tutor powered by Google Gemini. Ask any academic question!</p>
-
-            <!-- API Key Setup Box (Hidden once saved) -->
-            <div id="api-key-box" class="bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-400 p-4 rounded-lg mb-6 shadow-sm">
-                <h4 class="font-bold text-yellow-800 dark:text-yellow-400 mb-2"><i class="fa-solid fa-key"></i> One-Time Setup Needed</h4>
-                <p class="text-sm text-yellow-700 dark:text-yellow-300 mb-3">To keep this tool 100% free and fast, please enter your Free Google Gemini API Key. It saves safely in your browser.</p>
-                <div class="flex space-x-2">
-                    <input type="password" id="gemini-api-key" placeholder="Paste your API key here..." class="flex-grow p-2 border rounded dark:bg-gray-800 outline-none text-sm">
-                    <button onclick="saveApiKey()" class="bg-primary text-white px-4 py-2 rounded text-sm hover:bg-blue-700">Save Key</button>
-                </div>
-                <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-xs text-blue-500 underline mt-2 inline-block">Get free API key here</a>
+        <!-- 1. AI MCQ MAKER -->
+        <section id="mcq-maker" class="hide w-full max-w-4xl mx-auto">
+            <h2 class="text-3xl font-bold mb-2"><i class="fa-solid fa-list-check text-cyan-500"></i> AI Notes Test Maker</h2>
+            
+            <div id="api-key-box" class="bg-yellow-50 dark:bg-yellow-900/30 p-4 border rounded mb-4">
+                <p class="text-sm text-yellow-800 dark:text-yellow-400 mb-2">Save free Google Gemini API Key to use AI tools locally.</p>
+                <div class="flex"><input type="password" id="gemini-api-key" placeholder="API Key..." class="p-2 border rounded w-full text-sm dark:bg-gray-700"><button onclick="saveApiKey()" class="bg-primary text-white px-4 py-2 rounded ml-2">Save</button></div>
             </div>
 
-            <!-- AI Chat Area -->
-            <div class="bg-white dark:bg-darkcard p-6 rounded-xl shadow">
-                <textarea id="ai-prompt" class="w-full h-32 p-4 border rounded-lg focus:outline-none focus:border-primary dark:bg-gray-700 dark:border-gray-600 mb-4 resize-none" placeholder="e.g., Explain Quantum Physics in simple words... or Summarize the French Revolution..."></textarea>
-                
-                <div class="flex justify-between items-center mb-6">
-                    <button onclick="askAI()" id="ai-btn" class="bg-gradient-to-r from-primary to-purple-600 text-white px-6 py-2 rounded shadow hover:opacity-90 font-bold flex items-center">
-                        <i class="fa-solid fa-paper-plane mr-2"></i> Ask AI
-                    </button>
-                    <!-- Ad placement near AI Button -->
-                    <div class="text-xs text-gray-400">[ Small Ad Spot ]</div>
+            <div id="mcq-setup-area" class="bg-white dark:bg-darkcard p-6 rounded-xl shadow">
+                <label class="font-bold block mb-2">Paste Study Notes:</label>
+                <textarea id="mcq-notes" class="w-full h-32 p-3 border rounded-lg focus:outline-none dark:bg-gray-700 mb-4"></textarea>
+                <div class="flex gap-4">
+                    <select id="mcq-count" class="p-2 border rounded dark:bg-gray-700"><option value="3">3 Qs</option><option value="5" selected>5 Qs</option></select>
+                    <button onclick="generateQuiz()" id="generate-quiz-btn" class="bg-cyan-500 text-white px-6 py-2 rounded font-bold hover:bg-cyan-600 w-full">Generate Quiz</button>
                 </div>
+                <div id="mcq-loader" class="hidden mt-4 flex items-center text-cyan-600 font-bold"><div class="loader mr-3"></div> AI is creating your test...</div>
+            </div>
 
-                <!-- Response Box -->
-                <div id="ai-response-box" class="hidden">
-                    <h3 class="font-bold mb-2 text-gray-700 dark:text-gray-300">AI Response:</h3>
-                    <div id="ai-loader" class="hidden flex items-center text-primary font-bold"><div class="loader mr-3"></div> Thinking...</div>
-                    <div id="ai-response-content" class="p-4 bg-gray-50 dark:bg-gray-800 border rounded-lg whitespace-pre-wrap leading-relaxed text-sm"></div>
+            <div id="quiz-area" class="hidden bg-white dark:bg-darkcard p-6 rounded-xl shadow">
+                <div id="quiz-questions-container" class="space-y-6 mb-6"></div>
+                <button onclick="submitQuiz()" id="submit-quiz-btn" class="w-full bg-green-500 text-white py-3 rounded-xl font-bold">Submit Test</button>
+                <div id="quiz-results" class="hidden mt-6 text-center p-6 bg-blue-50 dark:bg-blue-900/30 rounded border border-blue-500">
+                    <h2 class="text-3xl font-bold">Score: <span id="quiz-score-display"></span></h2>
+                    <button onclick="resetQuiz()" class="mt-4 border border-blue-500 text-blue-500 px-4 py-1 rounded">Create New</button>
                 </div>
             </div>
         </section>
 
-        <!-- 2. POMODORO TIMER -->
-        <section id="timer" class="hide flex flex-col items-center py-10">
-            <h2 class="text-3xl font-bold mb-6">Study Timer</h2>
-            <div class="bg-white dark:bg-darkcard p-8 rounded-full shadow-2xl border-8 border-primary w-64 h-64 flex flex-col items-center justify-center mb-8">
+        <!-- 2. SCHEDULE MAKER (Weekly & Color Coding) -->
+        <section id="schedule" class="hide w-full max-w-5xl mx-auto">
+            <div class="flex justify-between items-center mb-4 no-print">
+                <h2 class="text-3xl font-bold"><i class="fa-solid fa-calendar-days text-indigo-500"></i> Class Schedule Maker</h2>
+                <div class="space-x-2">
+                    <button onclick="generateRandomSchedule()" class="bg-purple-500 text-white px-3 py-1 rounded shadow text-sm hover:bg-purple-600"><i class="fa-solid fa-dice"></i> Randomize</button>
+                    <button onclick="window.print()" class="bg-indigo-600 text-white px-3 py-1 rounded shadow text-sm hover:bg-indigo-700"><i class="fa-solid fa-print"></i> Print / PDF</button>
+                </div>
+            </div>
+            <p class="text-sm text-gray-500 mb-4 no-print">Click any cell to type. Auto-saves to your browser! Use standard color names like "red", "blue", "green" inside brackets e.g., <b>Math [blue]</b> to color code.</p>
+
+            <div class="overflow-x-auto bg-white dark:bg-darkcard p-4 rounded-xl shadow">
+                <table class="w-full text-center border-collapse">
+                    <thead>
+                        <tr class="bg-gray-200 dark:bg-gray-700 text-sm">
+                            <th class="border p-2 w-24">Time</th>
+                            <th class="border p-2">Mon</th><th class="border p-2">Tue</th><th class="border p-2">Wed</th>
+                            <th class="border p-2">Thu</th><th class="border p-2">Fri</th><th class="border p-2">Sat</th>
+                        </tr>
+                    </thead>
+                    <tbody id="schedule-body">
+                        <!-- JS renders rows -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 3. EXAM COUNTDOWN -->
+        <section id="countdown" class="hide w-full max-w-2xl mx-auto text-center">
+            <h2 class="text-3xl font-bold mb-6"><i class="fa-solid fa-hourglass-half text-red-500"></i> Exam Countdown</h2>
+            <div class="bg-white dark:bg-darkcard p-6 rounded-xl shadow mb-6">
+                <input type="text" id="exam-name" placeholder="Exam Name (e.g. Finals)" class="w-full p-2 mb-4 border rounded dark:bg-gray-700">
+                <input type="date" id="exam-date" class="w-full p-2 mb-4 border rounded dark:bg-gray-700 text-gray-500">
+                <button onclick="saveExam()" class="bg-red-500 text-white px-6 py-2 rounded font-bold hover:bg-red-600 w-full">Start Timer</button>
+            </div>
+            
+            <div id="countdown-display" class="hidden bg-red-50 dark:bg-red-900/20 p-8 rounded-xl border border-red-500">
+                <h3 id="c-name" class="text-2xl font-bold text-red-700 dark:text-red-300 mb-4"></h3>
+                <div class="grid grid-cols-3 gap-4 text-4xl font-black text-red-600 dark:text-red-400">
+                    <div><span id="c-days">0</span><div class="text-sm font-normal mt-1 text-gray-600">Days</div></div>
+                    <div><span id="c-hours">0</span><div class="text-sm font-normal mt-1 text-gray-600">Hours</div></div>
+                    <div><span id="c-mins">0</span><div class="text-sm font-normal mt-1 text-gray-600">Minutes</div></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. POMODORO TIMER & TRACKER -->
+        <section id="timer" class="hide flex flex-col items-center py-6">
+            <h2 class="text-3xl font-bold mb-6"><i class="fa-solid fa-stopwatch text-primary"></i> Study Timer</h2>
+            
+            <div class="bg-white dark:bg-darkcard p-8 rounded-full shadow-2xl border-8 border-primary w-64 h-64 flex flex-col items-center justify-center mb-6">
                 <span id="time-display" class="text-5xl font-mono font-bold">25:00</span>
             </div>
-            <div class="space-x-4 mb-6">
-                <button onclick="startTimer()" class="bg-primary text-white px-6 py-2 rounded shadow hover:bg-blue-700">Start</button>
-                <button onclick="pauseTimer()" class="bg-yellow-500 text-white px-6 py-2 rounded shadow hover:bg-yellow-600">Pause</button>
-                <button onclick="resetTimer()" class="bg-red-500 text-white px-6 py-2 rounded shadow hover:bg-red-600">Reset</button>
+            <div class="space-x-2 mb-6 text-sm">
+                <button onclick="startTimer()" class="bg-primary text-white px-5 py-2 rounded shadow hover:bg-blue-700">Start</button>
+                <button onclick="pauseTimer()" class="bg-yellow-500 text-white px-5 py-2 rounded shadow hover:bg-yellow-600">Pause</button>
+                <button onclick="resetTimer()" class="bg-red-500 text-white px-5 py-2 rounded shadow hover:bg-red-600">Reset</button>
+            </div>
+            
+            <div class="bg-gray-200 dark:bg-gray-800 p-4 rounded-xl w-full max-w-sm text-center">
+                <h4 class="font-bold mb-2">Daily Study Tracker</h4>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Total Focused Today: <span id="daily-tracked" class="font-bold text-primary text-lg">0</span> mins</p>
             </div>
         </section>
 
-        <!-- 3. NOTES MAKER -->
-        <section id="notes" class="hide w-full max-w-4xl mx-auto">
-            <h2 class="text-3xl font-bold mb-4">Smart Notes Maker</h2>
-            <textarea id="note-area" oninput="saveNote()" class="w-full h-80 p-4 border rounded-lg focus:outline-none focus:border-primary dark:bg-gray-700 dark:border-gray-600 mb-4" placeholder="Start typing..."></textarea>
-            <div class="flex justify-between items-center bg-gray-100 dark:bg-gray-800 p-4 rounded-lg">
-                <button onclick="downloadNote()" class="bg-green-500 text-white px-6 py-2 rounded shadow hover:bg-green-600">
-                    <i class="fa-solid fa-download mr-2"></i> Download TXT
-                </button>
-                <div class="text-xs text-gray-500">[ Ad Near Download ]</div>
-            </div>
-        </section>
-
-        <!-- 4. CGPA CALCULATOR -->
-        <section id="cgpa" class="hide w-full max-w-2xl mx-auto">
-            <h2 class="text-3xl font-bold mb-6 text-center">CGPA Calculator</h2>
-            <div class="bg-white dark:bg-darkcard p-6 rounded-xl shadow mb-6">
-                <div id="subject-rows" class="space-y-4"></div>
-                <button onclick="addSubjectRow()" class="mt-4 text-primary font-bold"><i class="fa-solid fa-plus"></i> Add Subject</button>
-            </div>
-            <button onclick="calculateCGPA()" class="w-full bg-primary text-white py-3 rounded-xl font-bold shadow hover:bg-blue-700">Calculate Result</button>
-            <div id="cgpa-result" class="hidden mt-6 text-center p-6 bg-green-100 dark:bg-green-900 rounded-xl border border-green-500">
-                <h3 class="text-2xl font-bold text-green-800 dark:text-green-100">Your GPA: <span id="final-gpa"></span></h3>
-            </div>
-        </section>
-
-        <!-- 5. WORD COUNTER -->
-        <section id="wordcount" class="hide w-full max-w-3xl mx-auto">
-            <h2 class="text-3xl font-bold mb-6">Word Counter</h2>
-            <div class="grid grid-cols-2 gap-4 mb-6 text-center">
-                <div class="bg-blue-100 dark:bg-blue-900 p-4 rounded shadow">
-                    <div class="text-3xl font-bold text-blue-800 dark:text-blue-100" id="w-count">0</div>
-                    <div class="text-sm">Words</div>
+        <!-- 5. UNIT & WORD CONVERTER -->
+        <section id="converter" class="hide w-full max-w-4xl mx-auto">
+            <h2 class="text-3xl font-bold mb-6"><i class="fa-solid fa-calculator text-pink-500"></i> Converter & Tools</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Unit Converter -->
+                <div class="bg-white dark:bg-darkcard p-6 rounded-xl shadow">
+                    <h3 class="font-bold mb-4 border-b pb-2">Length Converter</h3>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <input type="number" id="km-val" placeholder="Kilometers" oninput="conv('km')" class="w-1/2 p-2 border rounded dark:bg-gray-700">
+                        <span>=</span>
+                        <input type="number" id="mi-val" placeholder="Miles" oninput="conv('mi')" class="w-1/2 p-2 border rounded dark:bg-gray-700">
+                    </div>
+                    <h3 class="font-bold mb-4 border-b pb-2">Weight Converter</h3>
+                    <div class="flex items-center space-x-2">
+                        <input type="number" id="kg-val" placeholder="Kilograms" oninput="conv('kg')" class="w-1/2 p-2 border rounded dark:bg-gray-700">
+                        <span>=</span>
+                        <input type="number" id="lb-val" placeholder="Pounds" oninput="conv('lb')" class="w-1/2 p-2 border rounded dark:bg-gray-700">
+                    </div>
                 </div>
-                <div class="bg-green-100 dark:bg-green-900 p-4 rounded shadow">
-                    <div class="text-3xl font-bold text-green-800 dark:text-green-100" id="c-count">0</div>
-                    <div class="text-sm">Characters</div>
+
+                <!-- Word Counter -->
+                <div class="bg-white dark:bg-darkcard p-6 rounded-xl shadow">
+                    <h3 class="font-bold mb-4 border-b pb-2">Word Counter</h3>
+                    <textarea id="word-area" oninput="updateWordCount()" class="w-full h-24 p-2 border rounded dark:bg-gray-700 mb-2" placeholder="Type or paste text..."></textarea>
+                    <div class="flex justify-between text-sm font-bold text-pink-600 dark:text-pink-400">
+                        <span>Words: <span id="w-count">0</span></span>
+                        <span>Chars: <span id="c-count">0</span></span>
+                        <span>Read Time: <span id="r-time">0m</span></span>
+                    </div>
                 </div>
             </div>
-            <textarea id="word-area" oninput="updateWordCount()" class="w-full h-64 p-4 border rounded-lg focus:outline-none focus:border-primary dark:bg-gray-700 dark:border-gray-600" placeholder="Paste your text here..."></textarea>
         </section>
+
+        <!-- 6. PDF TOOLS (Placeholder UI with Ad Placement) -->
+        <section id="pdf-tools" class="hide w-full max-w-4xl mx-auto text-center">
+            <h2 class="text-3xl font-bold mb-6"><i class="fa-solid fa-file-pdf text-purple-500"></i> PDF Tools Suite</h2>
+            <p class="text-gray-500 mb-6">Select a tool to process your PDFs directly in your browser securely.</p>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <button class="bg-white dark:bg-darkcard p-4 rounded shadow border hover:border-purple-500" onclick="alert('Merge PDF tool selected! (Attach JS Library here)')"><i class="fa-solid fa-layer-group block text-2xl mb-2 text-purple-500"></i> Merge PDF</button>
+                <button class="bg-white dark:bg-darkcard p-4 rounded shadow border hover:border-purple-500" onclick="alert('Split PDF tool selected!')"><i class="fa-solid fa-cut block text-2xl mb-2 text-purple-500"></i> Split PDF</button>
+                <button class="bg-white dark:bg-darkcard p-4 rounded shadow border hover:border-purple-500" onclick="alert('Compress PDF tool selected!')"><i class="fa-solid fa-compress block text-2xl mb
+                                   <button class="bg-white dark:bg-darkcard p-4 rounded shadow border hover:border-purple-500" onclick="alert('PDF to Image tool selected!')"><i class="fa-solid fa-image block text-2xl mb-2 text-purple-500"></i> to Image</button>
+            </div>
+
+            <!-- Ad Placement near PDF Download -->
+            <div class="bg-gray-200 dark:bg-gray-800 text-xs py-4 text-gray-500 rounded border border-dashed border-gray-400">[ Ad Placement (Monetag/Adsense) Near PDF Upload/Download Buttons ]
+            </div>
+        </section>
+
+        <!-- (Keeping CGPA and Notes hidden structures clean) -->
+        <section id="cgpa" class="hide max-w-2xl mx-auto"><h2 class="text-3xl font-bold mb-4">CGPA Calculator</h2><p class="text-sm mb-4">Calculate semester GPA.</p><div id="subject-rows" class="space-y-2 mb-4"></div><button onclick="addSubjectRow()" class="text-primary text-sm mb-4">+ Add Subject</button><button onclick="calculateCGPA()" class="w-full bg-yellow-500 text-white py-2 rounded font-bold">Calculate</button><div id="final-gpa" class="mt-4 text-2xl font-bold text-center"></div></section>
+        
+        <section id="notes" class="hide max-w-4xl mx-auto"><h2 class="text-3xl font-bold mb-4">Notes Maker</h2><textarea id="note-area" oninput="saveNote()" class="w-full h-64 p-4 border rounded dark:bg-gray-700 mb-4" placeholder="Type... auto-saves."></textarea><div class="flex justify-between items-center"><button onclick="downloadNote()" class="bg-green-500 text-white px-6 py-2 rounded"><i class="fa-solid fa-download"></i> Download .TXT</button><div class="text-xs text-gray-400">[ Ad Near Download ]</div></div></section>
 
     </main>
 
     <!-- BOTTOM BANNER SPOT -->
-    <div class="w-full bg-gray-200 dark:bg-gray-800 text-center text-xs py-2 text-gray-500 mt-auto">[ Bottom Banner Ad Placement ]
-    </div>
+    <div class="w-full bg-gray-200 dark:bg-gray-800 text-center text-xs py-2 text-gray-500 mt-auto no-print">[ Bottom Banner Ad Placement ]</div>
 
-    <!-- JavaScript Logic -->
+    <!-- Javascript -->
     <script>
-        // 1. Navigation Logic
-        const sections =['home', 'ai-tutor', 'timer', 'notes', 'cgpa', 'wordcount'];
-        function showSection(sectionId) {
-            sections.forEach(sec => document.getElementById(sec).classList.add('hide'));
-            document.getElementById(sectionId).classList.remove('hide');
-            window.scrollTo(0, 0);
+        // --- 1. Navigation & Setup ---
+        const sections =['home', 'mcq-maker', 'schedule', 'countdown', 'timer', 'converter', 'pdf-tools', 'cgpa', 'notes'];
+        function showSection(id) {
+            sections.forEach(s => document.getElementById(s).classList.add('hide'));
+            document.getElementById(id).classList.remove('hide');
+            window.scrollTo(0,0);
+        }
+        function searchTools() {
+            let filter = document.getElementById('searchBar').value.toLowerCase();
+            document.querySelectorAll('.tool-card').forEach(card => {
+                card.style.display = card.innerText.toLowerCase().includes(filter) ? "" : "none";
+            });
+        }
+        function toggleDarkMode() { document.documentElement.classList.toggle('dark'); }
+        function shareLink(type) { alert(type === 'copy' ? "Link Copied!" : "Opening Share..."); }
+
+        // --- 2. Schedule Maker Logic (Editable Table + Color Parse) ---
+        const scheduleBody = document.getElementById('schedule-body');
+        const times =["08:00 AM", "09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", "01:00 PM", "02:00 PM", "03:00 PM"];
+        
+        function renderSchedule() {
+            scheduleBody.innerHTML = "";
+            let savedData = JSON.parse(localStorage.getItem('schedule_data')) || {};
+            
+            times.forEach((time, rIdx) => {
+                let row = `<tr><td class="border p-2 font-bold text-xs text-gray-500">${time}</td>`;
+                for(let cIdx=0; cIdx<6; cIdx++) {
+                    let cellId = `c_${rIdx}_${cIdx}`;
+                    let content = savedData[cellId] || "";
+                    // Parse color e.g. "Math [blue]"
+                    let bgColor = "transparent"; let textColor = "";
+                    if(content.includes('[red]')) { bgColor="#fee2e2"; textColor="#991b1b"; content = content.replace('[red]',''); }
+                    else if(content.includes('[blue]')) { bgColor="#dbeafe"; textColor="#1e40af"; content = content.replace('[blue]',''); }
+                    else if(content.includes('[green]')) { bgColor="#d1fae5"; textColor="#065f46"; content = content.replace('[green]',''); }
+                    
+                    row += `<td id="${cellId}" contenteditable="true" onblur="saveSchedule()" class="border p-2 text-sm focus:outline-none transition" style="background-color:${bgColor}; color:${textColor}">${content}</td>`;
+                }
+                row += `</tr>`;
+                scheduleBody.innerHTML += row;
+            });
+        }
+        function saveSchedule() {
+            let data = {};
+            document.querySelectorAll('td[contenteditable="true"]').forEach(td => {
+                data[td.id] = td.innerText;
+            });
+            localStorage.setItem('schedule_data', JSON.stringify(data));
+            renderSchedule(); // Re-render to apply color tags immediately
+        }
+        function generateRandomSchedule() {
+            let subjects = ["Math [blue]", "Physics [red]", "Break [green]", "English", "History [blue]"];
+            let data = {};
+            for(let r=0; r<times.length; r++){
+                for(let c=0; c<6; c++){
+                    if(Math.random() > 0.4) data[`c_${r}_${c}`] = subjects[Math.floor(Math.random()*subjects.length)];
+                }
+            }
+            localStorage.setItem('schedule_data', JSON.stringify(data));
+            renderSchedule();
+        }
+        renderSchedule();
+
+        // --- 3. Exam Countdown Logic ---
+        let countInterval;
+        function loadExam() {
+            let data = JSON.parse(localStorage.getItem('exam_data'));
+            if(data) { document.getElementById('exam-name').value = data.name; document.getElementById('exam-date').value = data.date; startCountdown(data.name, data.date); }
+        }
+        function saveExam() {
+            let n = document.getElementById('exam-name').value; let d = document.getElementById('exam-date').value;
+            if(!n || !d) return alert("Enter details");
+            localStorage.setItem('exam_data', JSON.stringify({name:n, date:d}));
+            startCountdown(n, d);
+        }
+        function startCountdown(name, dateStr) {
+            clearInterval(countInterval);
+            document.getElementById('countdown-display').classList.remove('hidden');
+            document.getElementById('c-name').innerText = name + " Exam";
+            let target = new Date(dateStr).getTime();
+            
+            countInterval = setInterval(() => {
+                let now = new Date().getTime(); let dist = target - now;
+                if(dist < 0) { clearInterval(countInterval); document.getElementById('c-days').innerText = "0"; return; }
+                document.getElementById('c-days').innerText = Math.floor(dist / (1000 * 60 * 60 * 24));
+                document.getElementById('c-hours').innerText = Math.floor((dist % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                document.getElementById('c-mins').innerText = Math.floor((dist % (1000 * 60 * 60)) / (1000 * 60));
+            }, 1000);
+        }
+        loadExam();
+
+        // --- 4. Timer & Daily Tracker ---
+        let timerInt; let tLeft = 25*60;
+        let trackedMins = parseInt(localStorage.getItem('tracked_mins')) || 0;
+        document.getElementById('daily-tracked').innerText = trackedMins;
+
+        function updateT() {
+            let m=Math.floor(tLeft/60); let s=tLeft%60;
+            document.getElementById('time-display').innerText = `${m<10?'0':''}${m}:${s<10?'0':''}${s}`;
+        }
+        function startTimer() {
+            clearInterval(timerInt);
+            timerInt = setInterval(() => {
+                if(tLeft > 0) { tLeft--; updateT(); } 
+                else { 
+                    clearInterval(timerInt); alert("Session Done!"); 
+                    trackedMins += 25; localStorage.setItem('tracked_mins', trackedMins);
+                    document.getElementById('daily-tracked').innerText = trackedMins;
+                }
+            }, 1000);
+        }
+        function pauseTimer() { clearInterval(timerInt); }
+        function resetTimer() { clearInterval(timerInt); tLeft=25*60; updateT(); }
+
+        // --- 5. Unit & Word Converter ---
+        function conv(type) {
+            let km=document.getElementById('km-val'), mi=document.getElementById('mi-val');
+            let kg=document.getElementById('kg-val'), lb=document.getElementById('lb-val');
+            if(type==='km') mi.value = (km.value * 0.621371).toFixed(2);
+            if(type==='mi') km.value = (mi.value * 1.60934).toFixed(2);
+            if(type==='kg') lb.value = (kg.value * 2.20462).toFixed(2);
+            if(type==='lb') kg.value = (lb.value * 0.453592).toFixed(2);
+        }
+        function updateWordCount() {
+            let text = document.getElementById('word-area').value;
+            let words = text.match(/\b[-?(\w+)?]+\b/gi);
+            let wc = words ? words.length : 0;
+            document.getElementById('w-count').innerText = wc;
+            document.getElementById('c-count').innerText = text.length;
+            document.getElementById('r-time').innerText = Math.ceil(wc/200)+"m";
         }
 
-        // 2. Search Logic
-        function searchTools(inputId) {
-            let filter = document.getElementById(inputId).value.toLowerCase();
-            let cards = document.querySelectorAll('.tool-card');
-            cards.forEach(card => {
-                let text = card.innerText.toLowerCase();
-                card.style.display = text.includes(filter) ? "" : "none";
+        // --- 6. Quick CGPA & Notes Setup ---
+        function addSubjectRow() {
+            let html = `<div class="flex space-x-2"><input type="number" placeholder="Credits" class="w-1/2 p-2 border rounded cr"><input type="number" placeholder="GPA(1-4)" class="w-1/2 p-2 border rounded gp"></div>`;
+            document.getElementById('subject-rows').insertAdjacentHTML('beforeend', html);
+        }
+        for(let i=0;i<3;i++) addSubjectRow();
+        function calculateCGPA() {
+            let tCr=0, tGp=0;
+            document.querySelectorAll('#subject-rows .flex').forEach(r => {
+                let c=parseFloat(r.querySelector('.cr').value), g=parseFloat(r.querySelector('.gp').value);
+                if(c&&g){ tCr+=c; tGp+=c*g; }
+            });
+            document.getElementById('final-gpa').innerText = tCr ? "GPA: " + (tGp/tCr).toFixed(2) : "Enter Data!";
+        }
+        
+        const noteArea = document.getElementById('note-area');
+        noteArea.value = localStorage.getItem('notes') || "";
+        function saveNote() { localStorage.setItem('notes', noteArea.value); }
+        function downloadNote() {
+            let blob = new Blob([noteArea.value], {type:'text/plain'});
+            let a = document.createElement('a'); a.download="Notes.txt"; a.href=URL.createObjectURL(blob); a.click();
+        }
+
+        // --- 7. AI MCQ TEST MAKER (Gemini API) ---
+        let savedKey = localStorage.getItem('gemini_api_key');
+        if(savedKey) document.getElementById('api-key-box').style.display='none';
+        function saveApiKey() {
+            let k = document.getElementById('gemini-api-key').value;
+            if(k){ localStorage.setItem('gemini_api_key', k); savedKey=k; document.getElementById('api-key-box').style.display='none'; }
+        }
+
+        let quizData =[];
+        async function generateQuiz() {
+            let text = document.getElementById('mcq-notes').value;
+            let count = document.getElementById('mcq-count').value;
+            if(!savedKey) return alert("Save API key first!"); if(text.length<30) return alert("Paste more notes!");
+            
+            document.getElementById('mcq-loader').classList.remove('hidden');
+            let prompt = `Make ${count} multiple choice questions from this text. Output ONLY valid JSON array like: [{"question":"Q1?", "options":["A","B","C","D"], "answer":"A"}]. Text: ${text}`;
+            
+            try {
+                let res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${savedKey}`, {
+                    method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})
+                });
+                let data = await res.json();
+                let cleanJson = data.candidates[0].content.parts[0].text.replace(/```json/gi,'').replace(/```/g,'').trim();
+                quizData = JSON.parse(cleanJson);
+                renderQuiz();
+            } catch(e) { alert("Error: " + e.message); }
+            document.getElementById('mcq-loader').classList.add('hidden');
+        }
+
+        function renderQuiz() {
+            document.getElementById('mcq-setup-area').classList.add('hidden');
+            document.getElementById('quiz-area').classList.remove('hidden');
+            let box = document.getElementById('quiz-questions-container'); box.innerHTML = "";
+            quizData.forEach((q, i) => {
+                let opts = q.options.map(opt => `<label class="block p-2 border rounded mb-2 opt-${i}"><input type="radio" name="q${i}" value="${opt}" class="mr-2">${opt}</label>`).join('');
+                box.innerHTML += `<div class="p-4 bg-gray-50 border rounded mb-4"><h4 class="font-bold mb-2">Q${i+1}: ${q.question}</h4>${opts}</div>`;
             });
         }
 
-        // 3. Dark Mode Setup
-        const themeIcon = document.getElementById('theme-icon');
-        const htmlClass = document.documentElement.classList;
-        if (localStorage.getItem('theme') === 'dark') { htmlClass.add('dark'); themeIcon.classList.replace('fa-moon', 'fa-sun'); }
-        function toggleDarkMode() {
-            if (htmlClass.contains('dark')) { htmlClass.remove('dark'); localStorage.setItem('theme', 'light'); themeIcon.classList.replace('fa-sun', 'fa-moon'); } 
-            else { htmlClass.add('dark'); localStorage.setItem('theme', 'dark'); themeIcon.classList.replace('fa-moon', 'fa-sun'); }
-        }
-
-        // ==========================================
-        // 🚀 NEW: AI TUTOR LOGIC (GEMINI API)
-        // ==========================================
-        const apiKeyBox = document.getElementById('api-key-box');
-        let savedKey = localStorage.getItem('gemini_api_key');
-        
-        // Hide API key box if already saved
-        if(savedKey) { apiKeyBox.style.display = 'none'; }
-
-        function saveApiKey() {
-            const key = document.getElementById('gemini-api-key').value.trim();
-            if(key) {
-                localStorage.setItem('gemini_api_key', key);
-                savedKey = key;
-                apiKeyBox.style.display = 'none';
-                alert("API Key Saved Successfully! You can now use the AI.");
-            } else { alert("Please enter a valid API key."); }
-        }
-
-        async function askAI() {
-            const promptStr = document.getElementById('ai-prompt').value.trim();
-            if(!savedKey) return alert("Please save your Google Gemini API Key first.");
-            if(!promptStr) return alert("Please type a question for the AI.");
-
-            const responseBox = document.getElementById('ai-response-box');
-            const loader = document.getElementById('ai-loader');
-            const contentDiv = document.getElementById('ai-response-content');
-            const btn = document.getElementById('ai-btn');
-
-            // UI Changes during loading
-            responseBox.classList.remove('hidden');
-            loader.classList.remove('hidden');
-            contentDiv.innerHTML = "";
-            btn.disabled = true; btn.style.opacity = '0.5';
-
-            try {
-                // Call Gemini API (Free Endpoint)
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${savedKey}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts:[{ text: "You are a helpful AI study assistant for students. Explain clearly and concisely. Question: " + promptStr }] }] })
+        function submitQuiz() {
+            let score = 0;
+            quizData.forEach((q, i) => {
+                let sel = document.querySelector(`input[name="q${i}"]:checked`);
+                document.querySelectorAll(`.opt-${i}`).forEach(lbl => {
+                    let r = lbl.querySelector('input'); r.disabled = true;
+                    if(r.value === q.answer) lbl.classList.add('correct-answer');
+                    if(sel && r === sel && r.value !== q.answer) lbl.classList.add('wrong-answer');
                 });
-
-                const data = await res.json();
-                
-                if(data.error) throw new Error(data.error.message);
-
-                // Format and show result
-                let aiText = data.candidates[0].content.parts[0].text;
-                // Simple markdown processing for bold text
-                aiText = aiText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-                contentDiv.innerHTML = aiText;
-
-            } catch (error) {
-                contentDiv.innerHTML = `<span class="text-red-500"><i class="fa-solid fa-triangle-exclamation"></i> Error: ${error.message}. (Check if your API key is correct or check your internet connection).</span>`;
-                // If invalid key, show the box again
-                if(error.message.includes('API key not valid')) {
-                    localStorage.removeItem('gemini_api_key');
-                    savedKey = null;
-                    apiKeyBox.style.display = 'block';
-                }
-            } finally {
-                loader.classList.add('hidden');
-                btn.disabled = false; btn.style.opacity = '1';
-            }
+                if(sel && sel.value === q.answer) score++;
+            });
+            document.getElementById('submit-quiz-btn').classList.add('hidden');
+            document.getElementById('quiz-results').classList.remove('hidden');
+            document.getElementById('quiz-score-display').innerText = `${score} / ${quizData.length}`;
         }
-
-        // (Other Tools Logic: Timer, Notes, CGPA etc kept intact from previous code)
-        // ... (Refer to previous code blocks for full script functions if needed) ...
-        function shareLink(platform) { /* existing logic */ }
-        let timerInterval; let timeLeft = 25*60;
-        function startTimer() { /* existing logic */ }
-        function pauseTimer() { clearInterval(timerInterval); }
-        function resetTimer() { clearInterval(timerInterval); document.getElementById('time-display').innerText="25:00"; }
-        function saveNote() { localStorage.setItem('notes', document.getElementById('note-area').value); }
-        function downloadNote() { /* existing logic */ }
-        function addSubjectRow() {
-            let row = document.createElement('div'); row.className = 'flex space-x-2 cgpa-row';
-            row.innerHTML = `<input type="text" placeholder="Subject" class="w-1/2 p-2 border rounded dark:bg-gray-700"><input type="number" placeholder="Credits" class="w-1/4 p-2 border rounded dark:bg-gray-700 credit-input"><select class="w-1/4 p-2 border rounded dark:bg-gray-700 grade-input"><option value="">Grade</option><option value="4.0">A</option><option value="3.0">B</option><option value="2.0">C</option></select><button onclick="this.parentElement.remove()" class="text-red-500"><i class="fa-solid fa-trash"></i></button>`;
-            document.getElementById('subject-rows').appendChild(row);
+        function resetQuiz() {
+            document.getElementById('mcq-setup-area').classList.remove('hidden');
+            document.getElementById('quiz-area').classList.add('hidden');
+            document.getElementById('quiz-results').classList.add('hidden');
+            document.getElementById('submit-quiz-btn').classList.remove('hidden');
         }
-        for(let i=0; i<3; i++) addSubjectRow();
-        function calculateCGPA() { /* existing logic */ document.getElementById('cgpa-result').classList.remove('hidden'); document.getElementById('final-gpa').innerText = "3.5 (Demo)"; }
-        function updateWordCount() { /* existing logic */ }
     </script>
 </body>
-</html>
+    </html>                                                                                                                                            
